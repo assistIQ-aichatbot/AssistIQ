@@ -9,23 +9,45 @@ def home():
     return render_template("index.html")
 
 # 🔹 Webhook (Dialogflow → Flask)
+user_state = {}
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json()
 
     intent = req['queryResult']['intent']['displayName']
+    session = req['session']  # unique user
 
-    if intent == "Login Issue":
-        reply = "Your login issue has been recorded. Please reset your password or contact support."
+    if session not in user_state:
 
-    elif intent == "Network Issue":
-        reply = "Your network issue has been noted. Please check your connection or VPN."
+        if intent == "Login Issue":
+            user_state[session] = "login"
+            reply = "Sure, I can help with that. Please describe your issue."
 
-    elif intent == "Application Issue":
-        reply = "Your application issue has been recorded. Please restart the application."
+        elif intent == "Network Issue":
+            user_state[session] = "network"
+            reply = "Network issue detected. Please describe your problem."
+
+        elif intent == "Application Issue":
+            user_state[session] = "application"
+            reply = "Application issue detected. Please describe your problem."
+
+        else:
+            reply = "Please tell me your issue type (login, network, application)."
 
     else:
-        reply = "I'm here to help. Please describe your issue."
+        import random
+        issue_type = user_state[session]
+
+        ticket_id = "TCKT" + str(random.randint(10000, 99999))
+
+        reply = f"""
+Thank you! Your {issue_type} issue has been recorded.
+Our team will get back to you soon.
+Ticket ID: {ticket_id}
+"""
+
+        del user_state[session]
 
     return jsonify({
         "fulfillmentText": reply
