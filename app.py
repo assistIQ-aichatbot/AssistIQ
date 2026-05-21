@@ -3,7 +3,7 @@ import os
 
 app = Flask(__name__)
 
-# 🔹 Home (UI page)
+# 🔹 Home page (loads your Messenger UI)
 @app.route('/')
 def home():
     return render_template("index.html")
@@ -16,16 +16,16 @@ def webhook():
     intent = req['queryResult']['intent']['displayName']
 
     if intent == "Login Issue":
-        reply = "Your login issue has been recorded. Please reset your password or wait for support."
+        reply = "Your login issue has been recorded. Please reset your password or contact support."
 
     elif intent == "Network Issue":
-        reply = "Your network issue has been noted. Please check your connection or try again later."
+        reply = "Your network issue has been noted. Please check your connection or VPN."
 
     elif intent == "Application Issue":
         reply = "Your application issue has been recorded. Please restart the application."
 
     else:
-        reply = "Your request has been received."
+        reply = "I'm here to help. Please describe your issue."
 
     return jsonify({
         "fulfillmentText": reply

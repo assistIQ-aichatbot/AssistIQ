@@ -2,14 +2,31 @@
 <html>
 <head>
     <title>AssistIQ Chatbot</title>
+
+    <!-- Dialogflow Messenger Script -->
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 
-<body style="text-align:center; font-family: Arial;">
+<body>
 
     <h1>AssistIQ – AI Chatbot</h1>
     <p>Your intelligent service desk assistant</p>
 
-    <iframe width="350" height="430" allow="microphone;" src="https://console.dialogflow.com/api-client/demo/embedded/442500e9-80d0-4178-a68d-86463fc42db7"></iframe>
+    <!-- Dialogflow Messenger -->
+    <df-messenger
+        intent="WELCOME"
+        chat-title="AssistIQ"
+        agent-id="442500e9-80d0-4178-a68d-86463fc42db7"
+        language-code="en">
+    </df-messenger>
 
 </body>
 </html>
