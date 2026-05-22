@@ -11,52 +11,24 @@
             font-family: 'Segoe UI', sans-serif;
             display: flex;
             height: 100vh;
-
-            background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #2b2b2b);
-            color: white;
+            background: #f5f7fa;
         }
 
         /* Sidebar */
         .sidebar {
-            width: 250px;
+            width: 220px;
+            background: #1f2937;
+            color: white;
             padding: 20px;
-
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255,255,255,0.1);
         }
 
         .sidebar h2 {
             margin-bottom: 20px;
         }
 
-        /* User section */
-        .user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .avatar {
-            background: #4da6ff;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .welcome {
-            margin: 0;
-            font-size: 14px;
-        }
-
         .status {
-            margin: 0;
+            color: #22c55e;
             font-size: 12px;
-            color: #00ff9d;
         }
 
         /* Main */
@@ -65,58 +37,60 @@
             padding: 20px;
         }
 
-        .main h2 {
-            margin-bottom: 15px;
-        }
-
-        /* Ticket container */
         .tickets {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            border-radius: 12px;
-            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
         }
 
-        /* Ticket cards */
         .ticket {
-            background: rgba(255,255,255,0.08);
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            transition: 0.3s;
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .ticket:hover {
-            background: rgba(255,255,255,0.15);
+        .ticket:last-child {
+            border-bottom: none;
         }
 
         .ticket-id {
             font-weight: bold;
-            color: #4da6ff;
+            color: #2563eb;
         }
 
         .ticket-type {
-            color: #ccc;
+            color: #555;
             font-size: 14px;
         }
 
         .ticket-status {
-            color: #00ff9d;
             font-size: 13px;
+            margin-top: 5px;
         }
 
-        /* Chatbot theme */
+        .actions {
+            margin-top: 10px;
+        }
+
+        .actions button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .pending-btn {
+            background: #ffc107;
+        }
+
+        .close-btn {
+            background: #28a745;
+            color: white;
+        }
+
         df-messenger {
-            --df-messenger-button-titlebar-color: #4da6ff;
-            --df-messenger-chat-background-color: #1a1a1a;
-            --df-messenger-user-message: #4da6ff;
-            --df-messenger-font-color: white;
-        }
-
-        /* Chat icon */
-        df-messenger::part(chat-button) {
-            background-image: url("https://cdn-icons-png.flaticon.com/512/4712/4712027.png");
-            background-size: cover;
+            --df-messenger-button-titlebar-color: #2563eb;
+            --df-messenger-user-message: #2563eb;
         }
     </style>
 </head>
@@ -126,25 +100,17 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>AssistIQ</h2>
-
-        <div class="user">
-            <div class="avatar">👤</div>
-            <div>
-                <p class="welcome">Welcome</p>
-                <p class="status">● Online</p>
-            </div>
-        </div>
+        <p>Support Dashboard</p>
+        <p class="status">● Online</p>
     </div>
 
     <!-- Main -->
     <div class="main">
-
         <h2>Support Tickets</h2>
 
         <div class="tickets" id="ticketList">
             Loading tickets...
         </div>
-
     </div>
 
     <!-- Chatbot -->
@@ -163,21 +129,45 @@
             let container = document.getElementById("ticketList");
 
             if (data.length === 0) {
-                container.innerHTML = "No active tickets. You're all good 👍";
+                container.innerHTML = "<div class='ticket'>No active tickets</div>";
                 return;
             }
 
             container.innerHTML = "";
 
             data.forEach(t => {
+
+                let color = "#16a34a";
+
+                if (t.status === "Open") color = "#ef4444";
+                if (t.status === "Pending") color = "#f59e0b";
+                if (t.status === "Closed") color = "#22c55e";
+
                 container.innerHTML += `
                     <div class="ticket">
                         <div class="ticket-id">${t.id}</div>
                         <div class="ticket-type">${t.type}</div>
-                        <div class="ticket-status">${t.status}</div>
+                        <div class="ticket-status" style="color:${color}">
+                            Status: ${t.status}
+                        </div>
+
+                        <div class="actions">
+                            <button class="pending-btn" onclick="updateStatus('${t.id}','Pending')">Pending</button>
+                            <button class="close-btn" onclick="updateStatus('${t.id}','Closed')">Close</button>
+                        </div>
                     </div>
                 `;
             });
+        }
+
+        async function updateStatus(id, status) {
+            await fetch('/update_ticket', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: id, status: status})
+            });
+
+            loadTickets();
         }
 
         setInterval(loadTickets, 3000);

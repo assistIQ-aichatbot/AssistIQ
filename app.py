@@ -1,20 +1,41 @@
 from flask import Flask, request, jsonify, render_template
 import os
 import random
+from pymongo import MongoClient
 
 app = Flask(__name__)
 
-# 🔹 Store tickets (in memory)
-tickets = []
+# 🔹 MongoDB (PUT YOUR REAL CONNECTION STRING)
+client = MongoClient("mongodb+srv://admin:MvbFgc!39CW223_@ticketsclstr.tfudn33.mongodb.net/")
+db = client["assistiq"]
+tickets_collection = db["tickets"]
 
+# 🔹 Home
 @app.route('/')
 def home():
     return render_template("index.html")
 
+# 🔹 Get Tickets
 @app.route('/tickets', methods=['GET'])
 def get_tickets():
+    tickets = list(tickets_collection.find({}, {"_id": 0}))
     return jsonify(tickets)
 
+# 🔹 Update Ticket Status
+@app.route('/update_ticket', methods=['POST'])
+def update_ticket():
+    data = request.json
+    ticket_id = data['id']
+    status = data['status']
+
+    tickets_collection.update_one(
+        {"id": ticket_id},
+        {"$set": {"status": status}}
+    )
+
+    return jsonify({"message": "Updated"})
+
+# 🔹 Webhook (Dialogflow)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json()
@@ -22,7 +43,7 @@ def webhook():
     intent = req['queryResult']['intent']['displayName']
     text = req['queryResult']['queryText'].lower()
 
-    # 🔴 Ticket creation
+    # 🔴 Create Ticket
     if intent == "Escalation" or "not working" in text or "not resolved" in text:
         ticket_id = "TCKT" + str(random.randint(10000, 99999))
 
@@ -32,33 +53,31 @@ def webhook():
             "status": "Open"
         }
 
-        tickets.append(ticket)  # ✅ store ticket
+        tickets_collection.insert_one(ticket)
 
         reply = f"""
 Your issue has been escalated.
 
 🎫 Ticket ID: {ticket_id}
 Status: Open
-
-Our team will contact you soon.
 """
         return jsonify({"fulfillmentText": reply})
 
     # 🟢 Solutions
     if "login" in text:
-        reply = "Please reset your password using 'Forgot Password'. Let me know if it works."
+        reply = "Try resetting your password."
 
     elif "vpn" in text or "network" in text:
-        reply = "Check your internet connection and reconnect VPN."
+        reply = "Check your connection and reconnect."
 
     elif "app" in text:
-        reply = "Restart or reinstall the application."
+        reply = "Restart or reinstall the app."
 
     elif "printer" in text:
-        reply = "Check printer connection and restart it."
+        reply = "Check printer connection."
 
     else:
-        reply = "Please describe your issue (login, network, app, printer)."
+        reply = "Please describe your issue."
 
     return jsonify({"fulfillmentText": reply})
 
