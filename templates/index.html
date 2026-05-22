@@ -8,54 +8,115 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             height: 100vh;
+
+            background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #2b2b2b);
+            color: white;
         }
 
         /* Sidebar */
         .sidebar {
             width: 250px;
-            background: #0d6efd;
-            color: white;
             padding: 20px;
+
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
 
         .sidebar h2 {
             margin-bottom: 20px;
         }
 
+        /* User section */
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .avatar {
+            background: #4da6ff;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome {
+            margin: 0;
+            font-size: 14px;
+        }
+
         .status {
-            margin-top: 10px;
-            color: lightgreen;
+            margin: 0;
+            font-size: 12px;
+            color: #00ff9d;
         }
 
         /* Main */
         .main {
             flex: 1;
             padding: 20px;
-            background: #f4f6f9;
         }
 
+        .main h2 {
+            margin-bottom: 15px;
+        }
+
+        /* Ticket container */
         .tickets {
-            background: white;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
             padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
+        /* Ticket cards */
         .ticket {
-            border-bottom: 1px solid #ddd;
-            padding: 10px 0;
+            background: rgba(255,255,255,0.08);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: 0.3s;
         }
 
-        .ticket:last-child {
-            border-bottom: none;
+        .ticket:hover {
+            background: rgba(255,255,255,0.15);
         }
 
-        /* Chat style */
+        .ticket-id {
+            font-weight: bold;
+            color: #4da6ff;
+        }
+
+        .ticket-type {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .ticket-status {
+            color: #00ff9d;
+            font-size: 13px;
+        }
+
+        /* Chatbot theme */
         df-messenger {
-            --df-messenger-button-titlebar-color: #0d6efd;
+            --df-messenger-button-titlebar-color: #4da6ff;
+            --df-messenger-chat-background-color: #1a1a1a;
+            --df-messenger-user-message: #4da6ff;
+            --df-messenger-font-color: white;
+        }
+
+        /* Chat icon */
+        df-messenger::part(chat-button) {
+            background-image: url("https://cdn-icons-png.flaticon.com/512/4712/4712027.png");
+            background-size: cover;
         }
     </style>
 </head>
@@ -65,14 +126,20 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>AssistIQ</h2>
-        <p>User: Nila</p>
-        <p class="status">● Online</p>
+
+        <div class="user">
+            <div class="avatar">👤</div>
+            <div>
+                <p class="welcome">Welcome</p>
+                <p class="status">● Online</p>
+            </div>
+        </div>
     </div>
 
     <!-- Main -->
     <div class="main">
 
-        <h2>My Tickets</h2>
+        <h2>Support Tickets</h2>
 
         <div class="tickets" id="ticketList">
             Loading tickets...
@@ -96,7 +163,7 @@
             let container = document.getElementById("ticketList");
 
             if (data.length === 0) {
-                container.innerHTML = "No tickets yet";
+                container.innerHTML = "No active tickets. You're all good 👍";
                 return;
             }
 
@@ -105,15 +172,14 @@
             data.forEach(t => {
                 container.innerHTML += `
                     <div class="ticket">
-                        <b>${t.id}</b><br>
-                        Type: ${t.type}<br>
-                        Status: ${t.status}
+                        <div class="ticket-id">${t.id}</div>
+                        <div class="ticket-type">${t.type}</div>
+                        <div class="ticket-status">${t.status}</div>
                     </div>
                 `;
             });
         }
 
-        // Auto refresh tickets every 3 sec
         setInterval(loadTickets, 3000);
         loadTickets();
     </script>
