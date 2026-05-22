@@ -62,25 +62,6 @@ def webhook():
         Status: Open
         """
         return jsonify({"fulfillmentText": reply})
-
-    # Solutions based on Keywords
-
-    if intent == "Login Issue":
-        reply = "Try resetting your password."
-
-    elif intent == "Network Issue":
-        reply = "Check your connection and reconnect."
-
-    elif intent == "Application Issue":
-        reply = "Restart or reinstall the app."
-
-    elif intent == "Printer Issue":
-        reply = "Check printer connection."
-
-    else:
-        reply = "Please describe your issue."
-
-    return jsonify({"fulfillmentText": reply})
-
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
