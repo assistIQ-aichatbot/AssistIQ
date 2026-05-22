@@ -22,24 +22,8 @@
             padding: 20px;
         }
 
-        .sidebar h2 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .menu {
-            margin-top: 30px;
-        }
-
-        .menu div {
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        .menu div:hover {
-            background: #f3f4f6;
+        .sidebar img {
+            width: 120px;
         }
 
         /* Main */
@@ -67,13 +51,15 @@
             font-size: 14px;
         }
 
-        /* Online badge */
+        /* Online badge with glow */
         .status {
             background: #d1fae5;
             color: #065f46;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
         }
 
         /* Tickets */
@@ -124,13 +110,12 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2><img src="logo.png" alt="AssistIQ" width="100"></h2>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="AssistIQ">
     </div>
 
     <!-- Main -->
     <div class="main">
 
-        <!-- 🔥 Header like your reference -->
         <div class="header">
             <div class="header-left">
                 <h1>Welcome User 👋</h1>
@@ -203,4 +188,4 @@
     </script>
 
 </body>
-</html>ß
+</html>
