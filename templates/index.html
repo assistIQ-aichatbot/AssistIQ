@@ -67,7 +67,7 @@
             margin-top: 5px;
         }
 
-        .actions {
+        .actions { 
             margin-top: 10px;
         }
 
@@ -89,9 +89,24 @@
         }
 
         df-messenger {
-            --df-messenger-button-titlebar-color: #2563eb;
-            --df-messenger-user-message: #2563eb;
-        }
+  --df-messenger-button-titlebar-color: #2563eb;
+  --df-messenger-chat-background-color: #1a1a1a;
+
+  
+  --df-messenger-bot-message: #2563eb;
+  --df-messenger-font-color: #000000;
+
+  --df-messenger-user-message: #ffffff;;
+}
+
+/* Optional: better contrast */
+df-messenger::part(bot-message) {
+  color: black;
+}
+
+df-messenger::part(user-message) {
+  color: black;
+}
     </style>
 </head>
 
@@ -115,7 +130,7 @@
 
     <!-- Chatbot -->
     <df-messenger
-        intent="WELCOME"
+        intent="WELCOME User!"
         chat-title="AssistIQ"
         agent-id="442500e9-80d0-4178-a68d-86463fc42db7"
         language-code="en">
