@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <img src="{{ url_for('static', filename='logo.png') }}">
+    <title>Dashboard</title>
 
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 
@@ -38,6 +38,14 @@
             padding: 5px;
             cursor: pointer;
         }
+
+        df-messenger::part(titlebar)::after {
+        content: " ● Online";
+        color: #22c55e;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 10px;
+        }
     </style>
 </head>
 
@@ -45,8 +53,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2>AssistIQ</h2>
-        <p>Online</p>
+        <h2><img src="{{ url_for('static', filename='logo.png') }}" width="120"></h2>
     </div>
 
     <!-- Main -->
