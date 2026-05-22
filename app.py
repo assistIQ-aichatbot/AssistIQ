@@ -4,57 +4,64 @@ import random
 
 app = Flask(__name__)
 
-# 🔹 Home page
+# 🔹 Store tickets (in memory)
+tickets = []
+
 @app.route('/')
 def home():
     return render_template("index.html")
 
-# 🔹 Memory
-user_state = {}
+@app.route('/tickets', methods=['GET'])
+def get_tickets():
+    return jsonify(tickets)
 
-# 🔹 Webhook
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json()
 
     intent = req['queryResult']['intent']['displayName']
     text = req['queryResult']['queryText'].lower()
-    session = req['session']
 
-    # 🔴 STEP 1: Escalation (ticket creation)
-    if intent == "Escalation" or "still not working" in text or "not resolved" in text:
+    # 🔴 Ticket creation
+    if intent == "Escalation" or "not working" in text or "not resolved" in text:
         ticket_id = "TCKT" + str(random.randint(10000, 99999))
 
+        ticket = {
+            "id": ticket_id,
+            "type": text,
+            "status": "Open"
+        }
+
+        tickets.append(ticket)  # ✅ store ticket
+
         reply = f"""
-I understand your issue is not resolved.
+Your issue has been escalated.
 
-Your support ticket has been created.
-Ticket ID: {ticket_id}
+🎫 Ticket ID: {ticket_id}
+Status: Open
 
-Our team will get back to you soon.
+Our team will contact you soon.
 """
         return jsonify({"fulfillmentText": reply})
 
-    # 🟢 STEP 2: Provide solution FIRST
+    # 🟢 Solutions
     if "login" in text:
-        reply = "Please try resetting your password using 'Forgot Password'. Let me know if it works."
+        reply = "Please reset your password using 'Forgot Password'. Let me know if it works."
 
     elif "vpn" in text or "network" in text:
-        reply = "Check your internet connection and try reconnecting VPN. Let me know if it works."
+        reply = "Check your internet connection and reconnect VPN."
 
-    elif "app" in text or "error" in text:
-        reply = "Try restarting the application or reinstalling it. Let me know if it works."
+    elif "app" in text:
+        reply = "Restart or reinstall the application."
 
     elif "printer" in text:
-        reply = "Check printer connection and restart the printer. Let me know if it works."
+        reply = "Check printer connection and restart it."
 
     else:
-        reply = "Please describe your issue. I can help with login, network, application, or system issues."
+        reply = "Please describe your issue (login, network, app, printer)."
 
-    return jsonify({
-        "fulfillmentText": reply
-    })
+    return jsonify({"fulfillmentText": reply})
 
-# 🔹 Run app
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
