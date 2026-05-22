@@ -1,55 +1,109 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>AssistIQ Dashboard</title>
 
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 
     <style>
         body {
             margin: 0;
-            font-family: Arial;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             height: 100vh;
-            background: #f5f7fa;
+            background: #f3f4f6;
         }
 
+        /* Sidebar */
         .sidebar {
-            width: 200px;
-            background: #1f2937;
+            width: 220px;
+            background: #111827;
             padding: 20px;
+            color: white;
         }
 
+        .logo {
+            width: 140px;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            font-size: 13px;
+            color: #22c55e;
+        }
+
+        /* Main */
         .main {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
         }
 
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Ticket Card */
         .ticket {
             background: white;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             transition: 0.2s;
         }
 
         .ticket:hover {
-            transform: scale(1.01);
+            transform: translateY(-2px);
+        }
+
+        .id {
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .type {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .status-tag {
+            font-size: 13px;
+            margin-top: 5px;
         }
 
         button {
-            margin-top: 5px;
-            padding: 5px;
+            margin-top: 8px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
 
-        /* sidebar logo img */
-        .sidebar img {
-            width: 120px;
-            display: block;
+        .pending {
+            background: #facc15;
         }
 
-        /*online status*/
+        .close {
+            background: #22c55e;
+            color: white;
+        }
+
+        /* Chatbot Styling */
+        df-messenger {
+            --df-messenger-button-titlebar-color: #2563eb;
+            --df-messenger-chat-background-color: #f9fafb;
+            --df-messenger-user-message: #2563eb;
+        }
+
+        /* 🔥 Replace Dialogflow Icon */
+        df-messenger::part(chat-button) {
+            background-image: url("{{ url_for('static', filename='icon.png') }}");
+            background-size: cover;
+        }
+
+        /* 🔥 Online blinking dot */
         df-messenger::part(titlebar) {
             position: relative;
         }
@@ -58,7 +112,7 @@
             content: "●";
             color: #22c55e;
             position: absolute;
-            right: 10px;
+            right: 12px;
             top: 12px;
             font-size: 14px;
             animation: blink 1.5s infinite;
@@ -77,12 +131,13 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <img src="{{ url_for('static', filename='logo.png') }}">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+        <div class="status">● Online</div>
     </div>
 
     <!-- Main -->
     <div class="main">
-        <h3>Tickets</h3>
+        <div class="title">Support Tickets</div>
         <div id="list">Loading...</div>
     </div>
 
@@ -101,7 +156,7 @@
             let div = document.getElementById("list");
 
             if (data.length === 0) {
-                div.innerHTML = "No tickets";
+                div.innerHTML = "No active tickets 👍";
                 return;
             }
 
@@ -109,19 +164,21 @@
 
             data.forEach(t => {
 
-                let color = "green";
-                if (t.status === "Open") color = "red";
-                if (t.status === "Pending") color = "orange";
+                let color = "#22c55e";
+                if (t.status === "Open") color = "#ef4444";
+                if (t.status === "Pending") color = "#f59e0b";
 
                 div.innerHTML += `
                     <div class="ticket">
-                        <b>${t.id}</b><br>
-                        ${t.type}<br>
-                        <span style="color:${color}">${t.status}</span><br>
+                        <div class="id">${t.id}</div>
+                        <div class="type">${t.type}</div>
+                        <div class="status-tag" style="color:${color}">
+                            ${t.status}
+                        </div>
 
                         ${t.status !== "Closed" ? `
-                        <button onclick="update('${t.id}','Pending')">Pending</button>
-                        <button onclick="update('${t.id}','Closed')">Close</button>
+                        <button class="pending" onclick="update('${t.id}','Pending')">Pending</button>
+                        <button class="close" onclick="update('${t.id}','Closed')">Close</button>
                         ` : ""}
                     </div>
                 `;
