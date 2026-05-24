@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AssistIQ Dashboard</title>
+    <title>ChatBot Dashboard</title>
 
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 
@@ -106,7 +106,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <img src="{{ url_for('static', filename='logo.png') }}">
+        <img src="{{ url_for('static', filename='icon.png') }}">
     </div>
 
     <!-- Main -->
@@ -129,7 +129,7 @@
     <!-- Chatbot -->
     <df-messenger
         intent="WELCOME"
-        chat-title="AssistIQ"
+        chat-title="ChatBot"
         agent-id="442500e9-80d0-4178-a68d-86463fc42db7"
         language-code="en">
     </df-messenger>
